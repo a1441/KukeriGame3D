@@ -8,21 +8,12 @@ public class TopDownPlayerController : MonoBehaviour
     [SerializeField] private float rotationSpeed = 10f;
     [SerializeField] private float gravity = -9.81f;
     
-    [Header("Attack")]
-    [SerializeField] private float attackRange = 2f;
-    [SerializeField] private float attackDamage = 10f;
-    [SerializeField] private float attackCooldown = 0.5f;
-    [SerializeField] private LayerMask enemyLayer;
-    
     [Header("References")]
     [SerializeField] private Camera playerCamera;
-    [SerializeField] private Transform attackPoint;
 
     private CharacterController characterController;
     private Vector3 inputVector;
     private Vector3 velocity;
-    private float lastAttackTime;
-    private bool isAttacking;
 
     private void Awake()
     {
@@ -33,15 +24,6 @@ public class TopDownPlayerController : MonoBehaviour
         {
             playerCamera = Camera.main;
         }
-        
-        // Create attack point if not assigned
-        if (attackPoint == null)
-        {
-            GameObject attackPointObj = new GameObject("AttackPoint");
-            attackPointObj.transform.SetParent(transform);
-            attackPointObj.transform.localPosition = new Vector3(0f, 1f, 0.5f);
-            attackPoint = attackPointObj.transform;
-        }
     }
 
     private void Update()
@@ -50,7 +32,6 @@ public class TopDownPlayerController : MonoBehaviour
         HandleGravity();
         Move();
         Rotate();
-        HandleAttack();
     }
 
     private void ReadInput()
@@ -104,63 +85,6 @@ public class TopDownPlayerController : MonoBehaviour
 
         Quaternion targetRotation = Quaternion.LookRotation(inputVector, Vector3.up);
         transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
-    }
-
-    private void HandleAttack()
-    {
-        // Left mouse button attack
-        if (Input.GetMouseButtonDown(0) && Time.time >= lastAttackTime + attackCooldown)
-        {
-            Attack();
-            lastAttackTime = Time.time;
-        }
-    }
-
-    private void Attack()
-    {
-        isAttacking = true;
-        
-        // Perform attack - check for enemies in range
-        Collider[] hitEnemies = Physics.OverlapSphere(attackPoint.position, attackRange, enemyLayer);
-        
-        foreach (Collider enemy in hitEnemies)
-        {
-            // Try to get a health component or damageable interface
-            IDamageable damageable = enemy.GetComponent<IDamageable>();
-            if (damageable != null)
-            {
-                damageable.TakeDamage(attackDamage);
-            }
-            else
-            {
-                // Fallback: try to find a health script
-                MonoBehaviour[] components = enemy.GetComponents<MonoBehaviour>();
-                foreach (MonoBehaviour comp in components)
-                {
-                    if (comp.GetType().Name.Contains("Health") || comp.GetType().Name.Contains("Enemy"))
-                    {
-                        // Use reflection or add proper interface later
-                        Debug.Log($"Attacked {enemy.name} for {attackDamage} damage");
-                        break;
-                    }
-                }
-            }
-        }
-        
-        // Visual feedback (you can add animation triggers here)
-        Debug.Log("Player attacked!");
-        
-        isAttacking = false;
-    }
-
-    private void OnDrawGizmosSelected()
-    {
-        // Draw attack range in editor
-        if (attackPoint != null)
-        {
-            Gizmos.color = Color.red;
-            Gizmos.DrawWireSphere(attackPoint.position, attackRange);
-        }
     }
 }
 
