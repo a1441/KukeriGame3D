@@ -16,4 +16,9 @@ public class PlayerManager : MonoBehaviour
 
     public GameObject player;
 
+    public void onPlayerDeath()
+    {
+        Debug.Log("Player Died");
+    }
+
 }

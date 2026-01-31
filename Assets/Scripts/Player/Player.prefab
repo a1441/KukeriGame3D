@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 7051844771062899129}
   - component: {fileID: 2201009233493046391}
   - component: {fileID: 944363090709700233}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: ShockwaveHitbox
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -96,6 +96,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ShockwaveHitbox
   popupSpawner: {fileID: 0}
+  popupUpOffset: 0.35
+  popupSideJitter: 0.1
+  popupUpJitter: 0.05
+  popupProbeDistance: 10
 --- !u!1 &9135485986327376958
 GameObject:
   m_ObjectHideFlags: 0
@@ -110,10 +114,11 @@ GameObject:
   - component: {fileID: 1339384840702518598}
   - component: {fileID: 183601474232395579}
   - component: {fileID: 5399820390625669060}
-  - component: {fileID: 5372621533499912516}
-  - component: {fileID: 791214189924508361}
-  - component: {fileID: 3033898398541655250}
-  m_Layer: 0
+  - component: {fileID: 2221037462232396113}
+  - component: {fileID: 8596312232663607429}
+  - component: {fileID: 2845435454789544282}
+  - component: {fileID: 9104624877092172383}
+  m_Layer: 8
   m_Name: Player
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -257,7 +262,7 @@ MonoBehaviour:
   rotationSpeed: 10
   gravity: -9.81
   playerCamera: {fileID: 0}
---- !u!114 &5372621533499912516
+--- !u!114 &2221037462232396113
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -266,12 +271,45 @@ MonoBehaviour:
   m_GameObject: {fileID: 9135485986327376958}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d41e0014d8021444ebbd8a22a3ed21c0, type: 3}
+  m_Script: {fileID: 11500000, guid: 192dbb6ae8f34124ba9f442ff3eb14dd, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Health
-  currentHealth: 100
-  maxHealth: 100
---- !u!114 &791214189924508361
+  m_EditorClassIdentifier: Assembly-CSharp::CharacterStats
+  maxHealth: 500
+  health:
+    baseValue: 0
+  damage:
+    baseValue: 25
+--- !u!114 &8596312232663607429
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9135485986327376958}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e51dca027afb9b448b3a32b9894ffdbd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CharacterCombat
+  attacksSpeed: 1
+  attackDelay: 0.6
+--- !u!114 &2845435454789544282
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9135485986327376958}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9974162d842996b4c8416d602dde5623, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HitFlash
+  flashDuration: 0.08
+  flashAmount: 0.75
+  flashColor: {r: 1, g: 0, b: 0, a: 1}
+  renderers: []
+--- !u!114 &9104624877092172383
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -284,35 +322,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ShockwaveAttack
   cooldown: 1.5
-  maxWorldRadius: 2.6
-  damage: 25
-  knockbackForce: 2
+  maxWorldRadius: 2.5
+  damageMultiplier: 1
+  knockbackForce: 0
   hittableLayers:
     serializedVersion: 2
     m_Bits: 64
-  waveDuration: 0.5
+  waveDuration: 0.65
   activeExtraTime: 0.05
   vfx_shockwave_01: {fileID: 2571392513723408096}
-  shockwaveVfxRoot: {fileID: 5072422296585845782}
+  shockwaveVfxRoot: {fileID: 6621757237214165701}
   vfxRadiusMultiplier: 1
   hitbox: {fileID: 944363090709700233}
   hitboxCollider: {fileID: 7051844771062899129}
---- !u!114 &3033898398541655250
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9135485986327376958}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9974162d842996b4c8416d602dde5623, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::HitFlash
-  flashDuration: 0.12
-  flashAmount: 0.75
-  flashColor: {r: 1, g: 0, b: 0, a: 1}
-  renderers: []
 --- !u!1001 &6939634292533861601
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -388,6 +410,10 @@ PrefabInstance:
     - target: {fileID: 9080140021571130472, guid: 2ece9af4e5f0ccf46bd1fe2973d9660d, type: 3}
       propertyPath: m_Name
       value: vfx_Shockwave_01
+      objectReference: {fileID: 0}
+    - target: {fileID: 9080140021571130472, guid: 2ece9af4e5f0ccf46bd1fe2973d9660d, type: 3}
+      propertyPath: m_Layer
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 9080140021571130472, guid: 2ece9af4e5f0ccf46bd1fe2973d9660d, type: 3}
       propertyPath: m_IsActive

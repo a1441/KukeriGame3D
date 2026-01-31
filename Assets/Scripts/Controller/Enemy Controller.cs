@@ -5,14 +5,17 @@ public class EnemyController : MonoBehaviour
     public float lookRadius = 10f;
     Transform target;
     NavMeshAgent agent;
+    CharacterCombat combat;
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         target = PlayerManager.instance.player.transform;
-        agent = GetComponent<NavMeshAgent>();   
-
+        agent = GetComponent<NavMeshAgent>();
+        combat = GetComponent<CharacterCombat>();       
+        
+        
 
     }
 
@@ -28,7 +31,11 @@ public class EnemyController : MonoBehaviour
 
         if (distance <= agent.stoppingDistance)
         {
-            //Attack the target
+            CharacterStats targetStats = target.GetComponent<CharacterStats>(); 
+            if (targetStats != null)
+            {
+                combat.Attack(targetStats);
+            }
             FaceTarget();
         }
 
