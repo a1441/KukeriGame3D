@@ -1,17 +1,17 @@
-﻿using UnityEngine;
+﻿using Unity.VisualScripting;
+using UnityEngine;
 
 public class DetectionRange : MonoBehaviour
 {
     private GameObject player;
-    private Renderer rend;
     private LightController lightController;
+    [SerializeField] private GameObject healthBar;
 
     [SerializeField] private float detectionRadius = 5f;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         player = GameObject.FindWithTag("Player");
-        rend = GetComponent<Renderer>();
         lightController = player.GetComponentInChildren<LightController>();
     }
 
@@ -24,11 +24,21 @@ public class DetectionRange : MonoBehaviour
 
         if (distance <= detectionRadius)
         {
-            rend.enabled = true;   // Прави обекта видим
+            foreach (Renderer rend in GetComponentsInChildren<Renderer>())
+            {
+                rend.enabled = true;  // Показва обекта, ако състоянието на играча е "WithoutMask"
+            }
+
+            healthBar.GetComponent<WorldHealthBarUI>().ShowHealthBar();
         }
         else
         {
-            rend.enabled = false;  // Скрива обекта
+            foreach (Renderer rend in GetComponentsInChildren<Renderer>())
+            {
+                rend.enabled = false;  // Показва обекта, ако състоянието на играча е "WithoutMask"
+            }
+
+            healthBar.GetComponent<WorldHealthBarUI>().HideHealthBar();
         }
     }
 

@@ -199,6 +199,7 @@ GameObject:
   - component: {fileID: 4776525507409096586}
   - component: {fileID: 8790522302312391783}
   - component: {fileID: 6599585429113540100}
+  - component: {fileID: 1508755456971337960}
   m_Layer: 6
   m_Name: MeleeGhost
   m_TagString: NPC
@@ -376,7 +377,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 81d8b91689ca0fe44bb6dd0653f900ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyDeathHandler
-  destroyDelay: 0.5
+  animator: {fileID: 0}
+  isDeadBool: isDead
 --- !u!114 &6599585429113540100
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -390,6 +392,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyController
   lookRadius: 6
+--- !u!114 &1508755456971337960
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1133790883217508777}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b6b66f75cfe26014bbe48e7a711b2be3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DetectionRange
+  detectionRadius: 3
 --- !u!1 &1164926433169016780
 GameObject:
   m_ObjectHideFlags: 0

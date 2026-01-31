@@ -19,9 +19,13 @@ public class WorldHealthBarUI : MonoBehaviour
 
     Camera _cam;
 
+    private GameObject healthBar;
+
     void Awake()
     {
+        healthBar = this.gameObject;
         _cam = Camera.main;
+        HideHealthBar();
 
         // Auto-find stats from parent if not set
         if (!targetStats)
@@ -58,6 +62,16 @@ public class WorldHealthBarUI : MonoBehaviour
         // Optional hide when full HP
         if (hideWhenFull)
             gameObject.SetActive(ratio < 0.999f);
+    }
+
+    public void ShowHealthBar()
+    {
+        healthBar.SetActive(true);
+    }
+
+    public void HideHealthBar()
+    {
+        healthBar.SetActive(false);
     }
 
     // Call this after instantiating to bind a specific target
