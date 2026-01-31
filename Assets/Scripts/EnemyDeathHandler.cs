@@ -5,7 +5,11 @@ using UnityEngine.AI;
 [RequireComponent(typeof(CharacterStats))]
 public class EnemyDeathHandler : MonoBehaviour
 {
-    [SerializeField] private float destroyDelay = 0.5f;
+    private float destroyDelay = 1f;
+
+    [Header("Animator")]
+    [SerializeField] private Animator animator;
+    [SerializeField] private string isDeadBool = "isDead";
 
     private CharacterStats _stats;
     private NavMeshAgent _agent;
@@ -20,6 +24,11 @@ public class EnemyDeathHandler : MonoBehaviour
         _agent = GetComponent<NavMeshAgent>();
         _enemyController = GetComponent<EnemyController>();
         _combat = GetComponent<CharacterCombat>();
+
+        if (!animator)
+            animator = GetComponentInChildren<Animator>(true);
+            
+
     }
 
     void OnEnable()
@@ -49,8 +58,12 @@ public class EnemyDeathHandler : MonoBehaviour
             _agent.isStopped = true;
             _agent.ResetPath();
             _agent.velocity = Vector3.zero;
-            _agent.enabled = false; // optional: hard-disable agent
+            _agent.enabled = false;
         }
+
+        // Play death animation via bool
+        if (animator)
+            animator.SetBool(isDeadBool, true);
 
         StartCoroutine(DestroyAfterDelay());
     }
