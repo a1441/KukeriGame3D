@@ -12,9 +12,13 @@ public class CharacterCombat : MonoBehaviour
 
     public CharacterStats Stats => myStats;
 
+    [Header("On-Hit/Muzzle VFX (optional)")]
+    [SerializeField] private ParticleSystem muzzleVfx;   // assign in inspector (child on NPC)
+
     void Awake()
     {
         myStats = GetComponent<CharacterStats>();
+        
     }
 
     void Update()
@@ -48,7 +52,14 @@ public class CharacterCombat : MonoBehaviour
 
         Debug.Log($"[Combat] {name} -> {targetStats.name} for {dmg} dmg (before HP: {targetStats.currentHealth})");
 
+
         targetStats.TakeDamage(dmg);
+
+        if (muzzleVfx != null)
+        {
+            muzzleVfx.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+            muzzleVfx.Play(true);
+        }
 
         Debug.Log($"[Combat] {name} -> {targetStats.name} done. (after HP: {targetStats.currentHealth})");
     }
