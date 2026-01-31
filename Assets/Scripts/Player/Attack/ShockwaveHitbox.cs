@@ -1,25 +1,26 @@
-// ShockwaveHitbox.cs
 using System.Collections.Generic;
 using UnityEngine;
 
 public class ShockwaveHitbox : MonoBehaviour
 {
     private LayerMask _hittableLayers;
-    private float _damage;
+    private float _damageMultiplier;
     private float _knockbackForce;
+
+    private CharacterCombat _sourceCombat;
     private Transform _source;
     private bool _active;
 
-    // ensures each target only takes damage once per shockwave
-    private readonly HashSet<Collider> _hit = new HashSet<Collider>();
+    // ensures each CHARACTER only takes damage once per shockwave
+    private readonly HashSet<CharacterStats> _hit = new HashSet<CharacterStats>();
 
     [SerializeField] private DamagePopupSpawner popupSpawner;
 
     [Header("Popup Spawn Tuning (WORLD)")]
-    [SerializeField] private float popupUpOffset = 0.35f;     // smaller = closer to target
-    [SerializeField] private float popupSideJitter = 0.10f;   // smaller = less sideways randomness
-    [SerializeField] private float popupUpJitter = 0.05f;     // smaller = less vertical randomness
-    [SerializeField] private float popupProbeDistance = 10f;  // doesn't affect distance much; just needs to be > collider size
+    [SerializeField] private float popupUpOffset = 0.35f;
+    [SerializeField] private float popupSideJitter = 0.10f;
+    [SerializeField] private float popupUpJitter = 0.05f;
+    [SerializeField] private float popupProbeDistance = 10f;
 
     void Awake()
     {
@@ -27,11 +28,13 @@ public class ShockwaveHitbox : MonoBehaviour
             popupSpawner = FindFirstObjectByType<DamagePopupSpawner>();
     }
 
-    public void Arm(Transform source, LayerMask hittableLayers, float damage, float knockbackForce)
+    public void Arm(CharacterCombat sourceCombat, LayerMask hittableLayers, float damageMultiplier, float knockbackForce)
     {
-        _source = source;
+        _sourceCombat = sourceCombat;
+        _source = sourceCombat ? sourceCombat.transform : null;
+
         _hittableLayers = hittableLayers;
-        _damage = damage;
+        _damageMultiplier = damageMultiplier;
         _knockbackForce = knockbackForce;
 
         _hit.Clear();
@@ -44,54 +47,52 @@ public class ShockwaveHitbox : MonoBehaviour
     }
 
     private void OnTriggerEnter(Collider other) => TryHit(other);
-    private void OnTriggerStay(Collider other) => TryHit(other); // helps if collider grows past an object
+    private void OnTriggerStay(Collider other) => TryHit(other);
 
     private void TryHit(Collider other)
     {
-        if (!_active) return;
-        if (!other) return;
+        if (!_active || !other) return;
 
         // Layer filter
         if (((1 << other.gameObject.layer) & _hittableLayers.value) == 0)
             return;
 
-        // Ignore self (player root)
-        if (_source != null && other.transform == _source)
+        // Identify the character target
+        CharacterStats targetStats = other.GetComponentInParent<CharacterStats>();
+        if (!targetStats) return;
+
+        // Ignore self (same character)
+        if (_source != null && targetStats.transform == _source)
             return;
 
-        // Hit once per shockwave
-        if (_hit.Contains(other))
+        // Hit once per shockwave per character
+        if (_hit.Contains(targetStats))
             return;
 
-        _hit.Add(other);
+        _hit.Add(targetStats);
 
-        Health health = other.GetComponentInParent<Health>();
-        if (health != null)
+        // Compute damage from attacker stats
+        int baseDamage = (_sourceCombat && _sourceCombat.Stats) ? _sourceCombat.Stats.DamageValue : 0;
+        int finalDamage = Mathf.RoundToInt(baseDamage * _damageMultiplier);
+
+        targetStats.TakeDamage(finalDamage);
+
+        // Damage number popup
+        if (popupSpawner != null && _source != null)
         {
-            health.TakeDamage(_damage);
+            Vector3 worldPos = GetPopupWorldPos(
+                other,
+                _source.position,
+                popupUpOffset,
+                popupSideJitter,
+                popupUpJitter,
+                popupProbeDistance
+            );
 
-            // Damage number popup (furthest side from player, with small jitter)
-            if (popupSpawner != null && _source != null)
-            {
-                Vector3 worldPos = GetPopupWorldPos(
-                    other,
-                    _source.position,
-                    popupUpOffset,
-                    popupSideJitter,
-                    popupUpJitter,
-                    popupProbeDistance
-                );
-
-                popupSpawner.Spawn(_damage, worldPos);
-            }
-
-            // Flash (optional)
-            HitFlash flash = other.GetComponentInParent<HitFlash>();
-            if (flash != null)
-                flash.Flash();
-
-            Debug.Log($"[Shockwave] Damaged {other.name} for {_damage}. Remaining HP: {health.GetCurrentHealth()}");
+            popupSpawner.Spawn(finalDamage, worldPos); // adjust if your Spawn expects float
         }
+
+
 
         // Knockback (requires Rigidbody)
         if (_knockbackForce > 0f && other.attachedRigidbody != null && _source != null)
@@ -106,7 +107,6 @@ public class ShockwaveHitbox : MonoBehaviour
 
     private Vector3 GetPopupWorldPos(Collider targetCol, Vector3 playerPos, float upOffset, float sideJitter, float upJitter, float probeDistance)
     {
-        // Direction from player -> target (XZ)
         Vector3 dir = (targetCol.bounds.center - playerPos);
         dir.y = 0f;
 
@@ -115,14 +115,11 @@ public class ShockwaveHitbox : MonoBehaviour
 
         dir.Normalize();
 
-        // Furthest surface point away from player
         Vector3 probePoint = targetCol.bounds.center + dir * probeDistance;
         Vector3 surfacePoint = targetCol.ClosestPoint(probePoint);
 
-        // Up offset
         Vector3 pos = surfacePoint + Vector3.up * upOffset;
 
-        // Random jitter (small)
         Vector3 side = Vector3.Cross(Vector3.up, dir).normalized;
         float sideAmt = Random.Range(-sideJitter, sideJitter);
         float upAmt = Random.Range(0f, upJitter);
