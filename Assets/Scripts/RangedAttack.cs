@@ -13,6 +13,9 @@ public class RangedAttack : MonoBehaviour
     [SerializeField] private float fireCooldown = 1.2f;
     [SerializeField] private float minTravelDistance = 15f; // set this = lookRadius (detection range)
 
+    [Header("On-Hit/Muzzle VFX (optional)")]
+    [SerializeField] private ParticleSystem muzzleVfx;   // assign in inspector (child on NPC)
+
 
     private CharacterStats _stats;
     private float _nextFireTime;
@@ -46,7 +49,11 @@ public class RangedAttack : MonoBehaviour
 
         Projectile p = Instantiate(projectilePrefab, firePoint.position, Quaternion.LookRotation(dir));
         p.Init(transform, dir, dmg, maxDist, projectileSpeed);
-
+        if (muzzleVfx != null)
+        {
+            muzzleVfx.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+            muzzleVfx.Play(true);
+        }
         Debug.Log($"[RangedAttack] {name} fired at {target.name} dist={distance:F2} dmg={dmg} maxDist={maxDist:F2}");
     }
 }
