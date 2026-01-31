@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Kuker
   - NPC
+  - PatrolPoint
   layers:
   - Default
   - TransparentFX
