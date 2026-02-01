@@ -15,10 +15,14 @@ public class TopDownPlayerController : MonoBehaviour
     private Vector3 inputVector;
     private Vector3 velocity;
 
+    private Animator animator;
+
     private void Awake()
     {
         characterController = GetComponent<CharacterController>();
-        
+
+        animator = GetComponentInChildren<Animator>();
+
         // If camera not assigned, try to find main camera
         if (playerCamera == null)
         {
@@ -32,6 +36,8 @@ public class TopDownPlayerController : MonoBehaviour
         HandleGravity();
         Move();
         Rotate();
+
+        animator.SetFloat("Speed", Mathf.Abs(Input.GetAxisRaw("Horizontal")) + Mathf.Abs(Input.GetAxisRaw("Vertical")));
     }
 
     private void ReadInput()
@@ -70,7 +76,7 @@ public class TopDownPlayerController : MonoBehaviour
     }
 
     private void Move()
-    {
+    { 
         Vector3 moveDirection = inputVector * moveSpeed;
         moveDirection.y = velocity.y;
         characterController.Move(moveDirection * Time.deltaTime);

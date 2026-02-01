@@ -10,6 +10,8 @@ public class CharacterCombat : MonoBehaviour
     private float attackCooldown = 0f;
     private CharacterStats myStats;
 
+    private Animator animator;
+
     public CharacterStats Stats => myStats;
 
     [Header("On-Hit/Muzzle VFX (optional)")]
@@ -18,7 +20,7 @@ public class CharacterCombat : MonoBehaviour
     void Awake()
     {
         myStats = GetComponent<CharacterStats>();
-        
+        animator = GetComponentInChildren<Animator>();
     }
 
     void Update()
@@ -33,6 +35,8 @@ public class CharacterCombat : MonoBehaviour
 
         if (attackCooldown <= 0f)
         {
+            animator.SetTrigger("Attack");
+
             StartCoroutine(DoDamage(targetStats, attackDelay));
             attackCooldown = (attacksSpeed <= 0f) ? 0f : (1f / attacksSpeed);
         }
@@ -52,6 +56,7 @@ public class CharacterCombat : MonoBehaviour
 
         Debug.Log($"[Combat] {name} -> {targetStats.name} for {dmg} dmg (before HP: {targetStats.currentHealth})");
 
+        
 
         targetStats.TakeDamage(dmg);
 

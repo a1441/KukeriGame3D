@@ -33,16 +33,24 @@ public class ShockwaveAttack : MonoBehaviour
 
     private CharacterCombat _combat;
 
+    private LightController lightController;
+
     void Awake()
     {
+        lightController = GetComponentInChildren<LightController>();
         _combat = GetComponent<CharacterCombat>(); // <-- attacker combat/stats source
         CaptureVfxBaseScale();
     }
 
     void Update()
     {
-        if (Input.GetMouseButtonDown(0))
-            TryShockwave();
+        if (lightController.currentState == LightController.State.WithoutMask)
+        {
+            if (Input.GetMouseButtonDown(0))
+                TryShockwave();
+        }
+        //
+
     }
 
     public void TryShockwave()

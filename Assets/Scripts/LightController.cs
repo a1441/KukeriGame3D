@@ -29,8 +29,13 @@ public class LightController : MonoBehaviour
     public State currentState;
 
     private bool firstTime = false;
+    private float cooldownTimer = 3f;
 
     [SerializeField] private EnemyConnector enemyConnector;
+    private bool canChangeState = true;
+
+    public float stateCooldown = 3f;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -81,10 +86,22 @@ public class LightController : MonoBehaviour
         }
         else
         {
-            currentState = State.WithMask;
+            if (canChangeState)
+            {
+                currentState = State.WithMask;
 
-            rangeCoroutine = StartCoroutine(SmoothRangeChange());
+                StartCoroutine(StateCooldownRoutine());
+
+                rangeCoroutine = StartCoroutine(SmoothRangeChange());
+            }
         }
+    }
+
+    private IEnumerator StateCooldownRoutine()
+    {
+        canChangeState = false;
+        yield return new WaitForSeconds(stateCooldown);
+        canChangeState = true;
     }
 
     private IEnumerator SmoothRangeChange()
