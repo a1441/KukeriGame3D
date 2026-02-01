@@ -80,6 +80,7 @@ public class TopDownPlayerController : MonoBehaviour
         Vector3 moveDirection = inputVector * moveSpeed;
         moveDirection.y = velocity.y;
         characterController.Move(moveDirection * Time.deltaTime);
+        AudioManager.PlaySound(SoundType.Walk, 1.0f); // Placeholder for footstep sound logic
     }
 
     private void Rotate()

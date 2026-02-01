@@ -68,6 +68,7 @@ public class ShockwaveAttack : MonoBehaviour
         hitboxCollider.center = Vector3.zero;
 
         CaptureVfxBaseScale();
+        AudioManager.PlaySound(SoundType.Attack, 0.7f);
 
         // Arm hit logic with combat/stats
         hitbox.Arm(_combat, hittableLayers, damageMultiplier, knockbackForce);

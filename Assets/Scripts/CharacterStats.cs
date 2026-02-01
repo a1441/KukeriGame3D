@@ -35,6 +35,8 @@ public class CharacterStats : MonoBehaviour
 
         currentHealth -= amount;
 
+        AudioManager.PlaySound(SoundType.Hit, 0.7f);
+
         if (_hitFlash != null)
             _hitFlash.Flash();
 

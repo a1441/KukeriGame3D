@@ -9,6 +9,7 @@ public enum SoundType
     Attack,
     Hit,
     Death,
+    Walk
 }
 [RequireComponent(typeof(AudioSource))]
 public class AudioManager : MonoBehaviour
