@@ -11,6 +11,9 @@ public class RangedEnemyController : MonoBehaviour
     // Optional: if you want "shoot only when close enough"
     // If you want "shoot as soon as detected", set shootRadius = lookRadius.
     [SerializeField] private float shootRadius = 15f;
+    [SerializeField] private float shootRadiusIncrement = 5f;
+
+    private float defaultShootRadius;
 
     private Transform target;
     private NavMeshAgent agent;
@@ -20,6 +23,7 @@ public class RangedEnemyController : MonoBehaviour
     {
         agent = GetComponent<NavMeshAgent>();
         ranged = GetComponent<RangedAttack>();
+        defaultShootRadius = shootRadius;
     }
 
     void Start()
@@ -45,21 +49,21 @@ public class RangedEnemyController : MonoBehaviour
 
         float dist = Vector3.Distance(transform.position, target.position);
 
-        if (dist > lookRadius)
-            return;
+        //if (dist > lookRadius)
+        //    return;
 
-        // Chase until we reach stoppingDistance, then stop
-        if (dist > agent.stoppingDistance)
-        {
-            agent.isStopped = false;
-            agent.SetDestination(target.position);
-        }
-        else
-        {
-            agent.isStopped = true;
-            agent.ResetPath();
-            agent.velocity = Vector3.zero;
-        }
+        //// Chase until we reach stoppingDistance, then stop
+        //if (dist > agent.stoppingDistance)
+        //{
+        //    agent.isStopped = false;
+        //    agent.SetDestination(target.position);
+        //}
+        //else
+        //{
+        //    agent.isStopped = true;
+        //    agent.ResetPath();
+        //    agent.velocity = Vector3.zero;
+        //}
 
         // Shoot whenever detected (or use shootRadius if you want)
         if (dist <= shootRadius)
@@ -78,5 +82,15 @@ public class RangedEnemyController : MonoBehaviour
 
         Quaternion lookRotation = Quaternion.LookRotation(direction.normalized);
         transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 10f);
+    }
+
+    public void IncreaseShootRadius()
+    {
+        shootRadius += shootRadiusIncrement;
+    }
+
+    public void ResetShootRadius()
+    {
+        shootRadius = defaultShootRadius;
     }
 }
