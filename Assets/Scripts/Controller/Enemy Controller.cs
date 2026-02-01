@@ -21,7 +21,14 @@ public class EnemyController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        ChasePlayerWithoutMask();
+        if (lightController.currentState == LightController.State.WithoutMask)
+        {
+            ChasePlayerWithoutMask();
+        }
+        else
+        {
+            ChasePlayerWithMask();
+        }
     }
 
     void FaceTarget()

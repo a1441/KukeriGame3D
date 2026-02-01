@@ -72,7 +72,7 @@ public class LightController : MonoBehaviour
             {
                 if (canChangeState)
                 {
-                    //currentState = State.WithMask;
+                    currentState = State.WithMask;
 
                     playerLight.intensity = originalIntensityAmount;
                     playerLight.range = originalLightRange;
@@ -141,7 +141,7 @@ public class LightController : MonoBehaviour
         yield return new WaitForSeconds(stateCooldown);
         //currentState = State.WithMask;
         //rangeCoroutine = StartCoroutine(SmoothRangeReturn());
-        currentState = State.WithMask;
+        //currentState = State.WithMask;
         canChangeState = true;
     }
 
