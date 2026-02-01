@@ -1,10 +1,12 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
+using System;
 
 [RequireComponent(typeof(CharacterStats))]
 public class EnemyDeathHandler : MonoBehaviour
 {
+    public static event Action OnAnyNpcDied; // <-- NEW (global event)
     private float destroyDelay = 1f;
 
     [Header("Animator")]
@@ -66,11 +68,17 @@ public class EnemyDeathHandler : MonoBehaviour
             animator.SetBool(isDeadBool, true);
 
         StartCoroutine(DestroyAfterDelay());
-    }
+
+        // Trigger global event for any NPC death
+        
+        }
 
     IEnumerator DestroyAfterDelay()
     {
         yield return new WaitForSeconds(destroyDelay);
+        OnAnyNpcDied?.Invoke();
         Destroy(gameObject);
+
+        
     }
 }

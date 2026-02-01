@@ -25,7 +25,7 @@ public class WorldHealthBarUI : MonoBehaviour
     {
         healthBar = this.gameObject;
         _cam = Camera.main;
-        HideHealthBar();
+        // HideHealthBar();
 
         // Auto-find stats from parent if not set
         if (!targetStats)
@@ -33,6 +33,21 @@ public class WorldHealthBarUI : MonoBehaviour
 
         if (!followRoot && targetStats)
             followRoot = targetStats.transform;
+    }
+
+    void Start()
+    {
+        var master = targetStats ? targetStats.transform.root : transform.root;
+
+        Debug.Log($"[HealthBar] master={master.name}, masterTag={master.tag}, barObj={name}, barTag={tag}");
+
+        bool isPlayer = master.CompareTag("Player") || (targetStats && targetStats.CompareTag("Player"));
+
+        Debug.Log($"[HealthBar] isPlayer={isPlayer}");
+
+        if (isPlayer) ShowHealthBar();
+        else HideHealthBar();
+ 
     }
 
     void LateUpdate()
