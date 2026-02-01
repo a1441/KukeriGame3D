@@ -24,6 +24,7 @@ public class ShockwaveAttack : MonoBehaviour
     [Header("HITBOX (Child Object)")]
     [SerializeField] private ShockwaveHitbox hitbox;
     [SerializeField] private SphereCollider hitboxCollider;
+    public bool IsReady => Time.time >= _nextTime;
 
     private float _nextTime;
     private Coroutine _waveRoutine;
@@ -141,4 +142,29 @@ public class ShockwaveAttack : MonoBehaviour
         vfx_shockwave_01.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
         vfx_shockwave_01.Play(true);
     }
+
+    public float CooldownDuration => cooldown;
+
+public float CooldownRemaining
+{
+    get
+    {
+        // how many seconds left until ready
+        return Mathf.Max(0f, _nextTime - Time.time);
+    }
+}
+
+// FULL -> EMPTY bar:
+// 1 = just used (full), 0 = ready (empty)
+public float CooldownRemaining01
+{
+    get
+    {
+        if (cooldown <= 0f) return 0f;
+        return Mathf.Clamp01(CooldownRemaining / cooldown);
+    }
+}
+
+
+
 }

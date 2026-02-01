@@ -1,35 +1,35 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-namespace namespace_animclip_offset{
-public class anim_clip_offset : MonoBehaviour
+namespace namespace_animclip_offset
 {
-    private Animator animator;
-   
-    // Start is called before the first frame update
-    void Awake()
+    public class anim_clip_offset : MonoBehaviour
     {
-        animator = GetComponent<Animator>();
-        Play_Animationclip_offset();
+        private Animator animator;
+
+        void Awake()
+        {
+            animator = GetComponent<Animator>();
+        }
+
+        void Start()
+        {
+            // Ensure the animator has evaluated at least one frame
+            animator.Update(0f);
+            Play_Animationclip_offset();
+        }
+
+        void Play_Animationclip_offset()
+        {
+            var clips = animator.GetCurrentAnimatorClipInfo(0);
+            if (clips == null || clips.Length == 0 || clips[0].clip == null)
+                return;
+
+            AnimationClip animClip = clips[0].clip;
+
+            float normalizedTime = Random.value; // 0..1
+            int stateHash = animator.GetCurrentAnimatorStateInfo(0).shortNameHash;
+
+            animator.Play(stateHash, 0, normalizedTime);
+        }
     }
-
-    void Play_Animationclip_offset()
-    {
-            AnimatorClipInfo[] clip_name = animator.GetCurrentAnimatorClipInfo(0);
-            AnimationClip anim_clip = clip_name[0].clip;
-
-            float time = Random.Range(0f, anim_clip.length);
-            int clip_position = animator.GetCurrentAnimatorStateInfo(0).shortNameHash;
-
-            animator.Play(clip_position, 0, time / anim_clip.length);
-            
-
-    }
-    void Update(){
-
-        
-    }
-    
-}
 }

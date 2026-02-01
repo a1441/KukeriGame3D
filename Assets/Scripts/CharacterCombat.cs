@@ -30,6 +30,7 @@ public class CharacterCombat : MonoBehaviour
 
     public void Attack(CharacterStats targetStats)
     {
+    
         if (targetStats == null) return;
         if (myStats == null) return;
 
