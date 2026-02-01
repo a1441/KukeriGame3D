@@ -709,6 +709,7 @@ GameObject:
   - component: {fileID: 4696363470993301276}
   - component: {fileID: 283386529982310468}
   - component: {fileID: 7202350500791885520}
+  - component: {fileID: 6911456517523154700}
   m_Layer: 6
   m_Name: RangedGhost
   m_TagString: NPC
@@ -907,6 +908,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RangedEnemyController
   lookRadius: 12
   shootRadius: 12
+--- !u!114 &6911456517523154700
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6180285084413637326}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b6b66f75cfe26014bbe48e7a711b2be3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DetectionRange
+  detectionRadius: 3
 --- !u!1 &6218900775686417162
 GameObject:
   m_ObjectHideFlags: 0

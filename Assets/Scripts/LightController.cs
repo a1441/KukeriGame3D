@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Experimental.GlobalIllumination;
 
@@ -7,12 +8,14 @@ public class LightController : MonoBehaviour
     [SerializeField] private Light playerLight;
     [SerializeField] private float increaseIntenseAmount = 100f;
     [SerializeField] private float increaseRange = 100f;
-    [SerializeField] private GameObject directionalLight;
+    [SerializeField] private GameObject directionalLight; 
 
     private float originalLightRange;
     private float originalIntensityAmount;
+    private Coroutine rangeCoroutine;
 
     [SerializeField] private float duration = 2f;
+    [SerializeField] private RangedEnemyController[] rangedEnemies; 
 
     public float visibleRange = 10f;
     public float range;
@@ -24,6 +27,10 @@ public class LightController : MonoBehaviour
     }
 
     public State currentState;
+
+    private bool firstTime = false;
+
+    [SerializeField] private EnemyConnector enemyConnector;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -33,52 +40,50 @@ public class LightController : MonoBehaviour
         currentState = State.WithMask;
     }
 
-    private void Update()
+    private void LateUpdate()
     {
-        IncreaseLight();
-    }
-
-    private void IncreaseLight()
-    {
-        //if (Input.GetKeyDown(KeyCode.L))
-        //{
-        //    if (currentState == State.WithMask)
-        //    {
-                
-        //        range = playerLight.range;
-        //        currentState = State.WithoutMask;
-
-        //    }
-        //    else
-        //    {
-        //        playerLight.range = originalLightRange;
-        //        playerLight.intensity = originalIntensityAmount;
-        //        range = playerLight.range;
-        //        currentState = State.WithMask;
-        //    }
-        //}
-
         if (Input.GetKeyDown(KeyCode.L))
         {
             ChangeRangeSmooth();
         }
     }
 
-    private void ChangeRangeSmooth()
+    private void ChangeRangeSmooh()
     {
         StopAllCoroutines();
 
         if (currentState == State.WithMask)
         {
+            enemyConnector.ConnectOnMask();
             StartCoroutine(SmoothRangeReturn());
             currentState = State.WithoutMask;
             return;
         }
         else
         {
+            enemyConnector.ConnectWithoutMask();
             StartCoroutine(SmoothRangeChange());
             currentState = State.WithMask;
             return;
+        }
+    }
+
+    private void ChangeRangeSmooth()
+    {
+        if (rangeCoroutine != null)
+            StopCoroutine(rangeCoroutine);
+
+        if (currentState == State.WithMask)
+        {
+            currentState = State.WithoutMask;
+
+            rangeCoroutine = StartCoroutine(SmoothRangeReturn());
+        }
+        else
+        {
+            currentState = State.WithMask;
+
+            rangeCoroutine = StartCoroutine(SmoothRangeChange());
         }
     }
 
@@ -88,11 +93,17 @@ public class LightController : MonoBehaviour
         float startIntensity = playerLight.intensity;
         float time = 0f;
 
+        foreach (var ranged in rangedEnemies)
+        {
+            ranged.ResetShootRadius(); // ⬅️ ВАЖНО
+        }
+
         range = increaseRange;
 
         while (time < duration)
         {
             time += Time.deltaTime;
+            Debug.Log(time);
             playerLight.intensity = Mathf.Lerp(startIntensity, increaseIntenseAmount, time / duration);
             playerLight.range = Mathf.Lerp(startRange, increaseRange, time / duration);
             yield return null;
@@ -108,7 +119,12 @@ public class LightController : MonoBehaviour
         float startIntensity = playerLight.intensity;
         float time = 0f;
 
-        //range = originalLightRange;
+        foreach (var ranged in rangedEnemies)
+        {
+            ranged.IncreaseShootRadius();
+        }
+
+        range = originalLightRange;
 
         while (time < duration)
         {
