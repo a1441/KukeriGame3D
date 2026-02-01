@@ -15,7 +15,8 @@ public class LightController : MonoBehaviour
     private Coroutine rangeCoroutine;
 
     [SerializeField] private float duration = 2f;
-    [SerializeField] private RangedEnemyController[] rangedEnemies; 
+    [SerializeField] private RangedEnemyController[] rangedEnemies;
+    [SerializeField] private GameObject mask;
 
     public float visibleRange = 10f;
     public float range;
@@ -56,6 +57,8 @@ public class LightController : MonoBehaviour
             {
                 currentState = State.WithoutMask;
 
+                mask.SetActive(false);
+
                 playerLight.intensity = increaseIntenseAmount;
                 playerLight.range = increaseRange;
 
@@ -73,6 +76,8 @@ public class LightController : MonoBehaviour
                 if (canChangeState)
                 {
                     currentState = State.WithMask;
+
+                    mask.SetActive(true);
 
                     playerLight.intensity = originalIntensityAmount;
                     playerLight.range = originalLightRange;
