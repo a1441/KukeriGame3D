@@ -44,7 +44,7 @@ public class ShockwaveAttack : MonoBehaviour
 
     void Update()
     {
-        if (lightController.currentState == LightController.State.WithoutMask)
+        if (lightController.currentState == LightController.State.WithMask)
         {
             if (Input.GetMouseButtonDown(0))
                 TryShockwave();

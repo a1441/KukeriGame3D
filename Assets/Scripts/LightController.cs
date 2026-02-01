@@ -29,7 +29,7 @@ public class LightController : MonoBehaviour
     public State currentState;
 
     private bool firstTime = false;
-    private float cooldownTimer = 3f;
+    private float cooldownTimer = 5f;
 
     [SerializeField] private EnemyConnector enemyConnector;
     private bool canChangeState = true;
@@ -45,11 +45,49 @@ public class LightController : MonoBehaviour
         currentState = State.WithMask;
     }
 
-    private void LateUpdate()
+    private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.L))
+        if (Input.GetKeyDown(KeyCode.Mouse1))
         {
-            ChangeRangeSmooth();
+            if (rangeCoroutine != null)
+                StopCoroutine(rangeCoroutine);
+
+            if (currentState == State.WithMask)
+            {
+                currentState = State.WithoutMask;
+
+                playerLight.intensity = increaseIntenseAmount;
+                playerLight.range = increaseRange;
+
+                foreach (var ranged in rangedEnemies)
+                {
+                    ranged.IncreaseShootRadius(); // ⬅️ ВАЖНО
+                }
+
+                range = increaseRange;
+
+                //rangeCoroutine = StartCoroutine(SmoothRangeReturn());
+            }
+            else
+            {
+                if (canChangeState)
+                {
+                    //currentState = State.WithMask;
+
+                    playerLight.intensity = originalIntensityAmount;
+                    playerLight.range = originalLightRange;
+
+                    foreach (var ranged in rangedEnemies)
+                    {
+                        ranged.ResetShootRadius(); // ⬅️ ВАЖНО
+                    }
+
+                    range = originalLightRange;
+
+                    StartCoroutine(StateCooldownRoutine());
+                    //rangeCoroutine = StartCoroutine(SmoothRangeChange());
+                }
+            }
         }
     }
 
@@ -101,6 +139,9 @@ public class LightController : MonoBehaviour
     {
         canChangeState = false;
         yield return new WaitForSeconds(stateCooldown);
+        //currentState = State.WithMask;
+        //rangeCoroutine = StartCoroutine(SmoothRangeReturn());
+        currentState = State.WithMask;
         canChangeState = true;
     }
 
@@ -135,6 +176,8 @@ public class LightController : MonoBehaviour
         float startRange = playerLight.range;
         float startIntensity = playerLight.intensity;
         float time = 0f;
+
+
 
         foreach (var ranged in rangedEnemies)
         {
