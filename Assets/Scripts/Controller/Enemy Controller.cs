@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.AI;
 public class EnemyController : MonoBehaviour
 {
-    public float lookRadius = 10f;
+    public float lookRadius = 8f;
     Transform target;
     NavMeshAgent agent;
     CharacterCombat combat;
@@ -21,14 +21,7 @@ public class EnemyController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (lightController.currentState == LightController.State.WithoutMask)
-        {
-            ChasePlayerWithoutMask();
-        }
-        else
-        {
-            ChasePlayerWithMask();
-        }
+        ChasePlayerWithoutMask();
     }
 
     void FaceTarget()
